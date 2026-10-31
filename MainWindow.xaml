@@ -346,10 +346,9 @@
                             </StackPanel>
                         </Border>
 
-                        <!-- Hardware Info -->
+                        <!-- Clean Runtime & Battery Status (No Hardware UID clutter) -->
                         <StackPanel VerticalAlignment="Center">
-                            <TextBlock x:Name="TxtHardwareInfo" Text="EKSA Hardware DSP (COL01)" FontSize="11" FontWeight="SemiBold" Foreground="{StaticResource TextLight}" />
-                            <TextBlock x:Name="TxtRuntimeSub" Text="Lossless 5.8GHz Wireless Audio" FontSize="9" Foreground="{StaticResource TextDim}" />
+                            <TextBlock x:Name="TxtRuntimeSub" Text="Battery: 100% · Active (~6h 15m left)" FontSize="11" FontWeight="Medium" Foreground="{StaticResource TextMuted}" VerticalAlignment="Center" />
                         </StackPanel>
                     </StackPanel>
 

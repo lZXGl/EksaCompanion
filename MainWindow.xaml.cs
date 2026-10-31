@@ -71,7 +71,7 @@ namespace EksaCompanion
             ApplySettingsToUi();
 
             _lastBatteryTickUtc = DateTime.UtcNow;
-            if (_hardware.IsConnected && WindowsAudio.GetMasterPeakAudio() > 0.001f)
+            if (_hardware.IsConnected && WindowsAudio.GetMasterPeakAudio() > 0.0005f)
             {
                 _lastAudioDetectedUtc = DateTime.UtcNow;
                 _isAudioActive = true;
@@ -79,17 +79,17 @@ namespace EksaCompanion
             UpdateBatteryUi();
 
             _batteryTimer = new DispatcherTimer();
-            _batteryTimer.Interval = TimeSpan.FromSeconds(5);
+            _batteryTimer.Interval = TimeSpan.FromSeconds(2);
             _batteryTimer.Tick += delegate(object s, EventArgs e)
             {
                 DateTime nowUtc = DateTime.UtcNow;
-                double dt = Math.Max(0.0, Math.Min(15.0, (nowUtc - _lastBatteryTickUtc).TotalSeconds));
+                double dt = Math.Max(0.0, Math.Min(10.0, (nowUtc - _lastBatteryTickUtc).TotalSeconds));
                 _lastBatteryTickUtc = nowUtc;
 
                 if (_hardware.IsConnected)
                 {
                     float peak = WindowsAudio.GetMasterPeakAudio();
-                    if (peak > 0.001f)
+                    if (peak > 0.0005f)
                     {
                         _lastAudioDetectedUtc = nowUtc;
                     }
@@ -103,7 +103,7 @@ namespace EksaCompanion
                         _settings.ActiveUsedSeconds += dt;
                         _settings.LastActiveTime = DateTime.Now;
                         _ticksSinceSave++;
-                        if (_ticksSinceSave >= 6)
+                        if (_ticksSinceSave >= 15)
                         {
                             _ticksSinceSave = 0;
                             _settings.Save();
@@ -294,6 +294,12 @@ namespace EksaCompanion
 
             if (_hardware != null && _hardware.IsConnected)
             {
+                if (WindowsAudio.GetMasterPeakAudio() > 0.0005f)
+                {
+                    _lastAudioDetectedUtc = DateTime.UtcNow;
+                    _isAudioActive = true;
+                }
+
                 if (_isAudioActive)
                 {
                     TxtRuntimeSub.Text = string.Format("Battery: {0}% · Active {1}h {2}m (~{3}h {4}m left)", pct, usedH, usedM, remH, remM);
@@ -314,7 +320,7 @@ namespace EksaCompanion
             }
             else
             {
-                TxtRuntimeSub.Text = string.Format("Battery Paused (No Audio) · {0}% (Used {1}h {2}m)", pct, usedH, usedM);
+                TxtRuntimeSub.Text = "Please insert the 5.8GHz USB transmitter";
             }
         }
 
@@ -377,11 +383,6 @@ namespace EksaCompanion
                 DotDongle.Fill = new SolidColorBrush((System.Windows.Media.Color)System.Windows.Media.ColorConverter.ConvertFromString("#C084FC"));
                 TxtDongleStatus.Text = "5.8GHz DONGLE ACTIVE";
                 TxtDongleStatus.Foreground = new SolidColorBrush((System.Windows.Media.Color)System.Windows.Media.ColorConverter.ConvertFromString("#E9D5FF"));
-
-                if (!string.IsNullOrEmpty(uid))
-                    TxtHardwareInfo.Text = "Hardware UID: " + uid;
-                else
-                    TxtHardwareInfo.Text = "EKSA Hardware DSP (COL01)";
             }
             else
             {
@@ -391,7 +392,6 @@ namespace EksaCompanion
                 TxtDongleStatus.Text = "DONGLE UNPLUGGED";
                 TxtDongleStatus.Foreground = new SolidColorBrush((System.Windows.Media.Color)System.Windows.Media.ColorConverter.ConvertFromString("#FECDD3"));
 
-                TxtHardwareInfo.Text = "Please insert the 5.8GHz USB transmitter";
                 _notifyIcon.Text = "EKSA E910: Dongle Unplugged";
             }
             UpdateBatteryUi();
