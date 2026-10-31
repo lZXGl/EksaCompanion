@@ -302,11 +302,11 @@ namespace EksaCompanion
 
                 if (_isAudioActive)
                 {
-                    TxtRuntimeSub.Text = string.Format("Battery: {0}% · Active {1}h {2}m (~{3}h {4}m left)", pct, usedH, usedM, remH, remM);
+                    TxtRuntimeSub.Text = string.Format("Active {0}h {1}m · ~{2}h {3}m left", usedH, usedM, remH, remM);
                 }
                 else
                 {
-                    TxtRuntimeSub.Text = string.Format("Battery Paused (No Audio) · {0}% (~{1}h {2}m left)", pct, remH, remM);
+                    TxtRuntimeSub.Text = string.Format("Paused (No Audio) · ~{0}h {1}m left", remH, remM);
                 }
 
                 if (_notifyIcon != null)

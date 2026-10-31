@@ -346,9 +346,9 @@
                             </StackPanel>
                         </Border>
 
-                        <!-- Clean Runtime & Battery Status (No Hardware UID clutter) -->
+                        <!-- Clean Runtime & Battery Status (No Hardware UID or duplicate % clutter) -->
                         <StackPanel VerticalAlignment="Center">
-                            <TextBlock x:Name="TxtRuntimeSub" Text="Battery: 100% · Active (~6h 15m left)" FontSize="11" FontWeight="Medium" Foreground="{StaticResource TextMuted}" VerticalAlignment="Center" />
+                            <TextBlock x:Name="TxtRuntimeSub" Text="Active 0h 0m · ~6h 15m left" FontSize="11" FontWeight="Medium" Foreground="{StaticResource TextMuted}" VerticalAlignment="Center" />
                         </StackPanel>
                     </StackPanel>
 
@@ -552,10 +552,6 @@
                 <StackPanel Orientation="Horizontal" Grid.Column="0" VerticalAlignment="Center" Margin="16,0,0,0">
                     <CheckBox x:Name="ChkAutoStart" Style="{StaticResource LogiCheckBox}" Content="Run on Windows startup" Margin="0,0,16,0" Checked="ChkAutoStart_Changed" Unchecked="ChkAutoStart_Changed" />
                     <CheckBox x:Name="ChkStartMinimized" Style="{StaticResource LogiCheckBox}" Content="Start minimized in tray" Margin="0,0,16,0" Checked="ChkStartMinimized_Changed" Unchecked="ChkStartMinimized_Changed" />
-                </StackPanel>
-
-                <StackPanel Orientation="Horizontal" Grid.Column="1" VerticalAlignment="Center" Margin="0,0,16,0">
-                    <Button Content="Hide to Tray" Style="{StaticResource LogiChipStyle}" Background="#1C2331" Foreground="{StaticResource AccentCyan}" BorderBrush="{StaticResource AccentCyan}" Click="BtnClose_Click" />
                 </StackPanel>
             </Grid>
         </Grid>
