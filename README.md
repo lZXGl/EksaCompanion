@@ -1,5 +1,9 @@
 # EKSA E910 5.8GHz Companion (`EksaTray`)
 
+<p align="center">
+  <img src="assets/preview.png" alt="EKSA E910 Companion UI Preview" width="750" />
+</p>
+
 A lightweight, native Windows WPF system-tray companion for the **EKSA E910 5.8GHz Wireless Gaming Headset** (`VID_3206&PID_0F06`), replacing the legacy OEM `ToneTuningTool.exe` with a modern dark-purple UI, smooth animations, hardware DSP EQ control, and a calibrated battery indicator.
 
 ## Features
