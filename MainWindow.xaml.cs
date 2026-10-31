@@ -17,6 +17,7 @@ namespace EksaCompanion
     {
         // Battery calibration: drops from 100% to 20% in 5 hours (16% per hour, 6.25h total capacity)
         private const double BatteryDrainPercentPerHour = 16.0;
+        private const double AudioGraceWindowSeconds = 120.0;
 
         private readonly EksaHardware _hardware;
         private readonly AppSettings _settings;
@@ -27,6 +28,10 @@ namespace EksaCompanion
         private TextBlock[] _gainLabels;
         private bool _isUpdatingUi = false;
         private DateTime _suppressSliderEventsUntil = DateTime.MinValue;
+        private DateTime _lastAudioDetectedUtc = DateTime.MinValue;
+        private DateTime _lastBatteryTickUtc = DateTime.UtcNow;
+        private bool _isAudioActive = false;
+        private int _ticksSinceSave = 0;
 
         public MainWindow()
         {
@@ -65,14 +70,49 @@ namespace EksaCompanion
             InitNotifyIcon();
             ApplySettingsToUi();
 
+            _lastBatteryTickUtc = DateTime.UtcNow;
+            if (_hardware.IsConnected && WindowsAudio.GetMasterPeakAudio() > 0.001f)
+            {
+                _lastAudioDetectedUtc = DateTime.UtcNow;
+                _isAudioActive = true;
+            }
+            UpdateBatteryUi();
+
             _batteryTimer = new DispatcherTimer();
-            _batteryTimer.Interval = TimeSpan.FromSeconds(30);
+            _batteryTimer.Interval = TimeSpan.FromSeconds(5);
             _batteryTimer.Tick += delegate(object s, EventArgs e)
             {
+                DateTime nowUtc = DateTime.UtcNow;
+                double dt = Math.Max(0.0, Math.Min(15.0, (nowUtc - _lastBatteryTickUtc).TotalSeconds));
+                _lastBatteryTickUtc = nowUtc;
+
                 if (_hardware.IsConnected)
                 {
-                    _settings.LastActiveTime = DateTime.Now;
-                    _settings.Save();
+                    float peak = WindowsAudio.GetMasterPeakAudio();
+                    if (peak > 0.001f)
+                    {
+                        _lastAudioDetectedUtc = nowUtc;
+                    }
+
+                    bool withinGrace = (_lastAudioDetectedUtc != DateTime.MinValue) &&
+                                       ((nowUtc - _lastAudioDetectedUtc).TotalSeconds <= AudioGraceWindowSeconds);
+                    _isAudioActive = withinGrace;
+
+                    if (_isAudioActive)
+                    {
+                        _settings.ActiveUsedSeconds += dt;
+                        _settings.LastActiveTime = DateTime.Now;
+                        _ticksSinceSave++;
+                        if (_ticksSinceSave >= 6)
+                        {
+                            _ticksSinceSave = 0;
+                            _settings.Save();
+                        }
+                    }
+                }
+                else
+                {
+                    _isAudioActive = false;
                 }
                 UpdateBatteryUi();
             };
@@ -178,8 +218,8 @@ namespace EksaCompanion
 
         private int GetBatteryPercentage(out double elapsedHours)
         {
-            elapsedHours = Math.Max(0.0, (DateTime.Now - _settings.LastChargedTime).TotalHours);
-            // 100% -> 20% in 5 hours = 16% per hour (375 minutes total to 0%)
+            elapsedHours = Math.Max(0.0, _settings.ActiveUsedSeconds / 3600.0);
+            // 100% -> 20% in 5 hours of active sound = 16% per hour (375 minutes total to 0%)
             double pct = 100.0 - (elapsedHours * BatteryDrainPercentPerHour);
             if (pct < 0.0) pct = 0.0;
             if (pct > 100.0) pct = 100.0;
@@ -254,18 +294,27 @@ namespace EksaCompanion
 
             if (_hardware != null && _hardware.IsConnected)
             {
-                TxtRuntimeSub.Text = string.Format("Battery: {0}% · Used {1}h {2}m (~{3}h {4}m left)", pct, usedH, usedM, remH, remM);
+                if (_isAudioActive)
+                {
+                    TxtRuntimeSub.Text = string.Format("Battery: {0}% · Active {1}h {2}m (~{3}h {4}m left)", pct, usedH, usedM, remH, remM);
+                }
+                else
+                {
+                    TxtRuntimeSub.Text = string.Format("Battery Paused (No Audio) · {0}% (~{1}h {2}m left)", pct, remH, remM);
+                }
+
                 if (_notifyIcon != null)
                 {
-                    _notifyIcon.Text = string.Format("EKSA E910: {0}% | {1} | ENC {2}",
+                    _notifyIcon.Text = string.Format("EKSA E910: {0}%{1} | {2} | ENC {3}",
                         pct,
+                        (_isAudioActive ? "" : " (Paused)"),
                         (_settings.SurroundEnabled ? "7.1" : "Stereo"),
                         (_settings.MicEncEnabled ? "On" : "Off"));
                 }
             }
             else
             {
-                TxtRuntimeSub.Text = string.Format("Est. Battery: {0}% (Used {1}h {2}m since charge)", pct, usedH, usedM);
+                TxtRuntimeSub.Text = string.Format("Battery Paused (No Audio) · {0}% (Used {1}h {2}m)", pct, usedH, usedM);
             }
         }
 
@@ -273,6 +322,7 @@ namespace EksaCompanion
         {
             _settings.LastChargedTime = DateTime.Now;
             _settings.LastActiveTime = DateTime.Now;
+            _settings.ActiveUsedSeconds = 0.0;
             _settings.Save();
             UpdateBatteryUi();
             App.Log("Battery indicator reset to 100%");

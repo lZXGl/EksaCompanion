@@ -20,6 +20,7 @@ namespace EksaCompanion
         public sbyte[] EqBands { get; set; }
         public DateTime LastChargedTime { get; set; }
         public DateTime LastActiveTime { get; set; }
+        public double ActiveUsedSeconds { get; set; }
 
         public AppSettings()
         {
@@ -31,6 +32,7 @@ namespace EksaCompanion
             EqBands = new sbyte[10] { 2, 3, 2, -2, 0, 1, 0, 2, -3, 3 };
             LastChargedTime = DateTime.Now;
             LastActiveTime = DateTime.Now;
+            ActiveUsedSeconds = 0.0;
         }
 
         public static string ConfigPath
@@ -78,12 +80,15 @@ namespace EksaCompanion
                     else
                         settings.LastActiveTime = DateTime.Now;
 
+                    settings.ActiveUsedSeconds = ExtractDouble(json, "ActiveUsedSeconds", 0.0);
+
                     // Overnight charging detection: if PC was off/sleeping for >= 3.5h, headset was charged overnight!
                     TimeSpan gap = DateTime.Now - settings.LastActiveTime;
                     if (gap.TotalHours >= 3.5)
                     {
                         settings.LastChargedTime = DateTime.Now;
                         settings.LastActiveTime = DateTime.Now;
+                        settings.ActiveUsedSeconds = 0.0;
                         settings.Save();
                     }
                 }
@@ -114,6 +119,7 @@ namespace EksaCompanion
                 sb.AppendLine(string.Format("  \"SelectedPreset\": \"{0}\",", SelectedPreset));
                 sb.AppendLine(string.Format("  \"LastChargedTime\": \"{0:o}\",", LastChargedTime));
                 sb.AppendLine(string.Format("  \"LastActiveTime\": \"{0:o}\",", LastActiveTime));
+                sb.AppendLine(string.Format(System.Globalization.CultureInfo.InvariantCulture, "  \"ActiveUsedSeconds\": {0:F1},", ActiveUsedSeconds));
                 sb.Append("  \"EqBands\": [");
                 for (int i = 0; i < EqBands.Length; i++)
                 {
@@ -160,6 +166,15 @@ namespace EksaCompanion
         {
             Match m = Regex.Match(json, "\"" + key + "\"\\s*:\\s*\"([^\"]+)\"", RegexOptions.IgnoreCase);
             return m.Success ? m.Groups[1].Value : def;
+        }
+
+        private static double ExtractDouble(string json, string key, double def)
+        {
+            Match m = Regex.Match(json, "\"" + key + "\"\\s*:\\s*([0-9]+(?:\\.[0-9]+)?)", RegexOptions.IgnoreCase);
+            double val;
+            if (m.Success && double.TryParse(m.Groups[1].Value, System.Globalization.NumberStyles.Float, System.Globalization.CultureInfo.InvariantCulture, out val))
+                return val;
+            return def;
         }
 
         private static sbyte[] ExtractBands(string json)
