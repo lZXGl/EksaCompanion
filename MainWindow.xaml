@@ -1,0 +1,564 @@
+<Window x:Class="EksaCompanion.MainWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        Title="EKSA E910 Companion"
+        Height="550" Width="740"
+        MinHeight="550" MinWidth="740"
+        WindowStartupLocation="CenterScreen"
+        Background="#0D1017"
+        Foreground="#F1F5F9"
+        WindowStyle="None"
+        AllowsTransparency="False"
+        ResizeMode="CanMinimize"
+        Icon="app.ico">
+
+    <Window.Resources>
+        <!-- Modern EKSA Refined Purple Palette -->
+        <SolidColorBrush x:Key="DarkBg" Color="#0D0B14" />
+        <SolidColorBrush x:Key="HeaderBg" Color="#13101C" />
+        <SolidColorBrush x:Key="CardBg" Color="#181324" />
+        <SolidColorBrush x:Key="CardBorder" Color="#2A203E" />
+        <SolidColorBrush x:Key="AccentCyan" Color="#A855F7" />
+        <SolidColorBrush x:Key="AccentCyanHover" Color="#C084FC" />
+        <SolidColorBrush x:Key="AccentCyanBg" Color="#25123E" />
+        <SolidColorBrush x:Key="AccentPurple" Color="#A855F7" />
+        <SolidColorBrush x:Key="AccentPurpleHover" Color="#C084FC" />
+        <SolidColorBrush x:Key="AccentPurpleBg" Color="#25123E" />
+        <SolidColorBrush x:Key="TextLight" Color="#F1F5F9" />
+        <SolidColorBrush x:Key="TextMuted" Color="#94A3B8" />
+        <SolidColorBrush x:Key="TextDim" Color="#475569" />
+
+        <!-- Titlebar Buttons -->
+        <Style x:Key="TitleBtnStyle" TargetType="Button">
+            <Setter Property="Background" Value="Transparent" />
+            <Setter Property="Foreground" Value="#64748B" />
+            <Setter Property="BorderThickness" Value="0" />
+            <Setter Property="Width" Value="38" />
+            <Setter Property="Height" Value="32" />
+            <Setter Property="Cursor" Value="Hand" />
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="Button">
+                        <Border x:Name="Bd" Background="{TemplateBinding Background}" CornerRadius="4">
+                            <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center" />
+                        </Border>
+                        <ControlTemplate.Triggers>
+                            <Trigger Property="IsMouseOver" Value="True">
+                                <Setter TargetName="Bd" Property="Background" Value="#1E2533" />
+                                <Setter Property="Foreground" Value="#F1F5F9" />
+                            </Trigger>
+                        </ControlTemplate.Triggers>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+
+        <Style x:Key="CloseBtnStyle" TargetType="Button">
+            <Setter Property="Background" Value="Transparent" />
+            <Setter Property="Foreground" Value="#64748B" />
+            <Setter Property="BorderThickness" Value="0" />
+            <Setter Property="Width" Value="38" />
+            <Setter Property="Height" Value="32" />
+            <Setter Property="Cursor" Value="Hand" />
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="Button">
+                        <Border x:Name="Bd" Background="{TemplateBinding Background}" CornerRadius="4">
+                            <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center" />
+                        </Border>
+                        <ControlTemplate.Triggers>
+                            <Trigger Property="IsMouseOver" Value="True">
+                                <Setter TargetName="Bd" Property="Background" Value="#E11D48" />
+                                <Setter Property="Foreground" Value="#FFFFFF" />
+                            </Trigger>
+                        </ControlTemplate.Triggers>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+
+        <!-- Refined Slider Thumb -->
+        <Style x:Key="LogiSliderThumb" TargetType="{x:Type Thumb}">
+            <Setter Property="SnapsToDevicePixels" Value="true" />
+            <Setter Property="OverridesDefaultStyle" Value="true" />
+            <Setter Property="Height" Value="14" />
+            <Setter Property="Width" Value="28" />
+            <Setter Property="Cursor" Value="Hand" />
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="{x:Type Thumb}">
+                        <Border x:Name="ThumbBd" Background="#1E1430" BorderBrush="{StaticResource AccentPurple}" BorderThickness="1.5" CornerRadius="4"
+                                RenderTransformOrigin="0.5,0.5">
+                            <Border.RenderTransform>
+                                <ScaleTransform x:Name="ThumbScale" ScaleX="1" ScaleY="1" />
+                            </Border.RenderTransform>
+                            <Rectangle x:Name="ThumbPip" Width="10" Height="2" RadiusX="1" RadiusY="1" Fill="#C084FC" HorizontalAlignment="Center" VerticalAlignment="Center" />
+                        </Border>
+                        <ControlTemplate.Triggers>
+                            <Trigger Property="IsMouseOver" Value="True">
+                                <Setter TargetName="ThumbBd" Property="Background" Value="#2B1B47" />
+                                <Setter TargetName="ThumbBd" Property="BorderBrush" Value="#C084FC" />
+                                <Setter TargetName="ThumbPip" Property="Fill" Value="#F3E8FF" />
+                            </Trigger>
+                            <Trigger Property="IsDragging" Value="True">
+                                <Setter TargetName="ThumbBd" Property="Background" Value="#3B2163" />
+                                <Setter TargetName="ThumbBd" Property="BorderBrush" Value="#E9D5FF" />
+                                <Trigger.EnterActions>
+                                    <BeginStoryboard>
+                                        <Storyboard>
+                                            <DoubleAnimation Storyboard.TargetName="ThumbScale" Storyboard.TargetProperty="ScaleX" To="1.08" Duration="0:0:0.11" />
+                                            <DoubleAnimation Storyboard.TargetName="ThumbScale" Storyboard.TargetProperty="ScaleY" To="1.08" Duration="0:0:0.11" />
+                                        </Storyboard>
+                                    </BeginStoryboard>
+                                </Trigger.EnterActions>
+                                <Trigger.ExitActions>
+                                    <BeginStoryboard>
+                                        <Storyboard>
+                                            <DoubleAnimation Storyboard.TargetName="ThumbScale" Storyboard.TargetProperty="ScaleX" To="1.0" Duration="0:0:0.14" />
+                                            <DoubleAnimation Storyboard.TargetName="ThumbScale" Storyboard.TargetProperty="ScaleY" To="1.0" Duration="0:0:0.14" />
+                                        </Storyboard>
+                                    </BeginStoryboard>
+                                </Trigger.ExitActions>
+                            </Trigger>
+                        </ControlTemplate.Triggers>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+
+        <!-- Transparent RepeatButton for Slider Track -->
+        <Style x:Key="SliderRepeatBtnTransparent" TargetType="{x:Type RepeatButton}">
+            <Setter Property="SnapsToDevicePixels" Value="true" />
+            <Setter Property="OverridesDefaultStyle" Value="true" />
+            <Setter Property="IsTabStop" Value="false" />
+            <Setter Property="Focusable" Value="false" />
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="{x:Type RepeatButton}">
+                        <Border Background="Transparent" />
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+
+        <!-- Active Fill RepeatButton for Slider Track -->
+        <Style x:Key="SliderRepeatBtnActive" TargetType="{x:Type RepeatButton}">
+            <Setter Property="SnapsToDevicePixels" Value="true" />
+            <Setter Property="OverridesDefaultStyle" Value="true" />
+            <Setter Property="IsTabStop" Value="false" />
+            <Setter Property="Focusable" Value="false" />
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="{x:Type RepeatButton}">
+                        <Rectangle Width="4" RadiusX="2" RadiusY="2" HorizontalAlignment="Center">
+                            <Rectangle.Fill>
+                                <LinearGradientBrush StartPoint="0,0" EndPoint="0,1">
+                                    <GradientStop Color="#C084FC" Offset="0.0" />
+                                    <GradientStop Color="#6D28D9" Offset="1.0" />
+                                </LinearGradientBrush>
+                            </Rectangle.Fill>
+                        </Rectangle>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+
+        <!-- Refined Vertical EQ Slider -->
+        <Style x:Key="LogiEqSliderStyle" TargetType="{x:Type Slider}">
+            <Setter Property="Orientation" Value="Vertical" />
+            <Setter Property="Minimum" Value="-12" />
+            <Setter Property="Maximum" Value="12" />
+            <Setter Property="TickFrequency" Value="1" />
+            <Setter Property="IsSnapToTickEnabled" Value="True" />
+            <Setter Property="SmallChange" Value="1" />
+            <Setter Property="LargeChange" Value="3" />
+            <Setter Property="Width" Value="34" />
+            <Setter Property="Height" Value="170" />
+            <Setter Property="Margin" Value="4,0" />
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="{x:Type Slider}">
+                        <Grid>
+                            <!-- Track Line -->
+                            <Rectangle Width="4" Fill="#1E1B2E" RadiusX="2" RadiusY="2" HorizontalAlignment="Center" Margin="0,7" />
+                            <!-- 0 dB Center Marker tick -->
+                            <Rectangle Width="14" Height="1.5" Fill="#3B2F54" HorizontalAlignment="Center" VerticalAlignment="Center" />
+                            <Track x:Name="PART_Track">
+                                <Track.DecreaseRepeatButton>
+                                    <RepeatButton Style="{StaticResource SliderRepeatBtnActive}" Command="Slider.DecreaseLarge" />
+                                </Track.DecreaseRepeatButton>
+                                <Track.IncreaseRepeatButton>
+                                    <RepeatButton Style="{StaticResource SliderRepeatBtnTransparent}" Command="Slider.IncreaseLarge" />
+                                </Track.IncreaseRepeatButton>
+                                <Track.Thumb>
+                                    <Thumb Style="{StaticResource LogiSliderThumb}" />
+                                </Track.Thumb>
+                            </Track>
+                        </Grid>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+
+        <!-- Refined Preset Chip with Tactile Press Physics (scale 0.97) -->
+        <Style x:Key="LogiChipStyle" TargetType="Button">
+            <Setter Property="Background" Value="#171D28" />
+            <Setter Property="Foreground" Value="#94A3B8" />
+            <Setter Property="BorderThickness" Value="1" />
+            <Setter Property="BorderBrush" Value="#232B3C" />
+            <Setter Property="Padding" Value="14,6" />
+            <Setter Property="Margin" Value="3,0" />
+            <Setter Property="FontWeight" Value="SemiBold" />
+            <Setter Property="FontSize" Value="11" />
+            <Setter Property="Cursor" Value="Hand" />
+            <Setter Property="RenderTransformOrigin" Value="0.5,0.5" />
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="Button">
+                        <Border x:Name="ChipBorder"
+                                Background="{TemplateBinding Background}"
+                                BorderBrush="{TemplateBinding BorderBrush}"
+                                BorderThickness="{TemplateBinding BorderThickness}"
+                                CornerRadius="6"
+                                Padding="{TemplateBinding Padding}"
+                                RenderTransformOrigin="0.5,0.5">
+                            <Border.RenderTransform>
+                                <ScaleTransform x:Name="ChipScale" ScaleX="1" ScaleY="1" />
+                            </Border.RenderTransform>
+                            <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center" />
+                        </Border>
+                        <ControlTemplate.Triggers>
+                            <Trigger Property="IsMouseOver" Value="True">
+                                <Setter TargetName="ChipBorder" Property="BorderBrush" Value="#6D28D9" />
+                                <Setter Property="Foreground" Value="#F1F5F9" />
+                            </Trigger>
+                            <Trigger Property="IsPressed" Value="True">
+                                <Trigger.EnterActions>
+                                    <BeginStoryboard>
+                                        <Storyboard>
+                                            <DoubleAnimation Storyboard.TargetName="ChipScale" Storyboard.TargetProperty="ScaleX" To="0.96" Duration="0:0:0.09" />
+                                            <DoubleAnimation Storyboard.TargetName="ChipScale" Storyboard.TargetProperty="ScaleY" To="0.96" Duration="0:0:0.09" />
+                                        </Storyboard>
+                                    </BeginStoryboard>
+                                </Trigger.EnterActions>
+                                <Trigger.ExitActions>
+                                    <BeginStoryboard>
+                                        <Storyboard>
+                                            <DoubleAnimation Storyboard.TargetName="ChipScale" Storyboard.TargetProperty="ScaleX" To="1.0" Duration="0:0:0.14" />
+                                            <DoubleAnimation Storyboard.TargetName="ChipScale" Storyboard.TargetProperty="ScaleY" To="1.0" Duration="0:0:0.14" />
+                                        </Storyboard>
+                                    </BeginStoryboard>
+                                </Trigger.ExitActions>
+                            </Trigger>
+                        </ControlTemplate.Triggers>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+
+        <!-- Modern Dark CheckBox -->
+        <Style x:Key="LogiCheckBox" TargetType="CheckBox">
+            <Setter Property="Foreground" Value="#94A3B8" />
+            <Setter Property="FontSize" Value="11" />
+            <Setter Property="Cursor" Value="Hand" />
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="CheckBox">
+                        <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
+                            <Border x:Name="Box" Width="14" Height="14" Background="#161B26" BorderBrush="#2A3448" BorderThickness="1" CornerRadius="3" Margin="0,0,8,0">
+                                <Path x:Name="Check" Data="M2,6 L5,9 L10,3" Stroke="#C084FC" StrokeThickness="1.8" StrokeStartLineCap="Round" StrokeEndLineCap="Round" Visibility="Collapsed" HorizontalAlignment="Center" VerticalAlignment="Center" />
+                            </Border>
+                            <ContentPresenter VerticalAlignment="Center" />
+                        </StackPanel>
+                        <ControlTemplate.Triggers>
+                            <Trigger Property="IsChecked" Value="True">
+                                <Setter TargetName="Box" Property="BorderBrush" Value="#A855F7" />
+                                <Setter TargetName="Box" Property="Background" Value="#25123E" />
+                                <Setter TargetName="Check" Property="Visibility" Value="Visible" />
+                                <Setter Property="Foreground" Value="#F1F5F9" />
+                            </Trigger>
+                            <Trigger Property="IsMouseOver" Value="True">
+                                <Setter TargetName="Box" Property="BorderBrush" Value="#C084FC" />
+                            </Trigger>
+                        </ControlTemplate.Triggers>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+    </Window.Resources>
+
+    <Border x:Name="RootBorder" BorderBrush="#261C38" BorderThickness="1" RenderTransformOrigin="0.5,0.5">
+        <Border.RenderTransform>
+            <ScaleTransform x:Name="RootScale" ScaleX="1" ScaleY="1" />
+        </Border.RenderTransform>
+        <Grid>
+            <Grid.RowDefinitions>
+                <RowDefinition Height="46" />  <!-- Sleek Titlebar -->
+                <RowDefinition Height="Auto" /> <!-- Device Bar & Telemetry -->
+                <RowDefinition Height="*" />    <!-- Simple Clean EQ Area -->
+                <RowDefinition Height="44" />  <!-- Footer -->
+            </Grid.RowDefinitions>
+
+            <!-- Sleek Top Nav Bar (G Logo Removed, Sleek Headset Emblem) -->
+            <Grid Grid.Row="0" Background="{StaticResource HeaderBg}" MouseDown="TitleBar_MouseDown">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="Auto" />
+                    <ColumnDefinition Width="*" />
+                    <ColumnDefinition Width="Auto" />
+                </Grid.ColumnDefinitions>
+
+                <!-- Left: Headset Icon & Device Model (No "G") -->
+                <StackPanel Orientation="Horizontal" Grid.Column="0" Margin="16,0,0,0" VerticalAlignment="Center">
+                    <!-- Crisp Modern Headset Vector Icon -->
+                    <Path Data="M3,12 C3,7.03 7.03,3 12,3 C16.97,3 21,7.03 21,12 L21,17 C21,18.66 19.66,20 18,20 L16,20 C15.45,20 15,19.55 15,19 L15,14 C15,13.45 15.45,13 16,13 L19.2,13 C19.1,8.5 15.8,5 12,5 C8.2,5 4.9,8.5 4.8,13 L8,13 C8.55,13 9,13.45 9,14 L9,19 C9,19.55 8.55,20 8,20 L6,20 C4.34,20 3,18.66 3,17 Z"
+                          Fill="{StaticResource AccentCyan}" Width="16" Height="16" Stretch="Uniform" Margin="0,0,10,0" VerticalAlignment="Center" />
+                    
+                    <TextBlock Text="EKSA E910" FontWeight="Bold" FontSize="13" Foreground="#FFFFFF" VerticalAlignment="Center" />
+                    
+                    <Border Background="{StaticResource AccentCyanBg}" CornerRadius="3" Padding="6,1.5" Margin="8,0,0,0" VerticalAlignment="Center">
+                        <TextBlock Text="5.8GHz PRO" FontSize="9" FontWeight="Bold" Foreground="{StaticResource AccentCyan}" />
+                    </Border>
+                </StackPanel>
+
+                <!-- Right: Clean Window Controls -->
+                <StackPanel Orientation="Horizontal" Grid.Column="2" VerticalAlignment="Center" Margin="0,0,10,0">
+                    <Button Style="{StaticResource TitleBtnStyle}" Content="—" Click="BtnMinimize_Click" ToolTip="Minimize to Tray" FontSize="12" />
+                    <Button Style="{StaticResource CloseBtnStyle}" Content="✕" Click="BtnClose_Click" ToolTip="Hide to Tray" FontSize="11" />
+                </StackPanel>
+            </Grid>
+
+            <!-- Device Status & Hardware Controls Card -->
+            <Border Grid.Row="1" Background="{StaticResource CardBg}" Margin="16,12,16,8"
+                    BorderBrush="{StaticResource CardBorder}" BorderThickness="1" CornerRadius="6" Padding="16,10">
+                <Grid>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="*" />
+                        <ColumnDefinition Width="Auto" />
+                    </Grid.ColumnDefinitions>
+
+                    <!-- Left: Verified Hardware Dongle Status -->
+                    <StackPanel Grid.Column="0" Orientation="Horizontal" VerticalAlignment="Center">
+                        <!-- Dongle Link Pill -->
+                        <Border x:Name="BadgeDongle" Background="#231338" BorderBrush="{StaticResource AccentPurple}" BorderThickness="1" CornerRadius="4" Padding="10,4" Margin="0,0,14,0">
+                            <StackPanel Orientation="Horizontal">
+                                <Ellipse x:Name="DotDongle" Width="6" Height="6" Fill="{StaticResource AccentPurpleHover}" Margin="0,0,6,0" VerticalAlignment="Center" />
+                                <TextBlock x:Name="TxtDongleStatus" Text="5.8GHz DONGLE ACTIVE" FontSize="10" FontWeight="Bold" Foreground="#E9D5FF" VerticalAlignment="Center" />
+                            </StackPanel>
+                        </Border>
+
+                        <!-- Hardware Info -->
+                        <StackPanel VerticalAlignment="Center">
+                            <TextBlock x:Name="TxtHardwareInfo" Text="EKSA Hardware DSP (COL01)" FontSize="11" FontWeight="SemiBold" Foreground="{StaticResource TextLight}" />
+                            <TextBlock x:Name="TxtRuntimeSub" Text="Lossless 5.8GHz Wireless Audio" FontSize="9" Foreground="{StaticResource TextDim}" />
+                        </StackPanel>
+                    </StackPanel>
+
+                    <!-- Right: Battery Indicator & Hardware Toggles (Mic ENC & Surround) -->
+                    <StackPanel Grid.Column="1" Orientation="Horizontal" VerticalAlignment="Center">
+                        <!-- Calibrated Battery Pill (20% after 5h use, click to reset to 100%) -->
+                        <Button x:Name="BtnBatteryReset" Style="{StaticResource LogiChipStyle}" Click="BtnBatteryReset_Click" Margin="0,0,8,0" Padding="10,5"
+                                ToolTip="Estimated Headset Battery (drops to 20% after 5h use). Click to reset to 100% when charged.">
+                            <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
+                                <!-- Battery Body Icon -->
+                                <Grid VerticalAlignment="Center" Margin="0,0,6,0">
+                                    <Border x:Name="BdBatteryIcon" Width="20" Height="10" BorderBrush="#C084FC" BorderThickness="1.2" CornerRadius="2" Padding="1.5">
+                                        <Rectangle x:Name="RectBatteryFill" Width="15" Height="5" Fill="#C084FC" RadiusX="1" RadiusY="1" HorizontalAlignment="Left" />
+                                    </Border>
+                                    <Rectangle x:Name="RectBatteryTip" Width="2" Height="4" Fill="#C084FC" RadiusX="0.5" RadiusY="0.5" HorizontalAlignment="Right" Margin="0,0,-2.5,0" VerticalAlignment="Center" />
+                                </Grid>
+                                <TextBlock x:Name="TxtBatteryPct" Text="100%" FontSize="10" FontWeight="Bold" Foreground="#E9D5FF" VerticalAlignment="Center" />
+                            </StackPanel>
+                        </Button>
+
+                        <!-- Mic ENC Toggle Button -->
+                        <Button x:Name="BtnMicEnc" Style="{StaticResource LogiChipStyle}" Click="BtnMicEnc_Click" Margin="0,0,8,0"
+                                ToolTip="Toggle Hardware Mic ENC (Noise Cancellation)">
+                            <StackPanel Orientation="Horizontal">
+                                <TextBlock Text="MIC ENC: " FontSize="10" FontWeight="Bold" Foreground="{StaticResource TextMuted}" />
+                                <TextBlock x:Name="TxtMicEncState" Text="OFF" FontSize="10" FontWeight="Bold" Foreground="{StaticResource TextDim}" />
+                            </StackPanel>
+                        </Button>
+
+                        <!-- Surround Toggle Button -->
+                        <Button x:Name="BtnSurround" Style="{StaticResource LogiChipStyle}" Click="BtnSurround_Click"
+                                ToolTip="Toggle 7.1 Surround Sound / Stereo">
+                            <StackPanel Orientation="Horizontal">
+                                <TextBlock Text="AUDIO: " FontSize="10" FontWeight="Bold" Foreground="{StaticResource TextMuted}" />
+                                <TextBlock x:Name="TxtSurroundState" Text="STEREO" FontSize="10" FontWeight="Bold" Foreground="{StaticResource AccentCyan}" />
+                            </StackPanel>
+                        </Button>
+                    </StackPanel>
+                </Grid>
+            </Border>
+
+            <!-- 10-Band EQ Area -->
+            <Border Grid.Row="2" Background="{StaticResource CardBg}" Margin="16,0,16,8"
+                    BorderBrush="{StaticResource CardBorder}" BorderThickness="1" CornerRadius="6" Padding="16,10">
+                <Grid>
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto" /> <!-- Presets Bar -->
+                        <RowDefinition Height="*" />    <!-- Sliders -->
+                        <RowDefinition Height="Auto" /> <!-- Frequency labels -->
+                    </Grid.RowDefinitions>
+
+                    <!-- Preset Selector Row -->
+                    <Grid Grid.Row="0" Margin="0,0,0,10">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="*" />
+                            <ColumnDefinition Width="Auto" />
+                        </Grid.ColumnDefinitions>
+
+                        <StackPanel Orientation="Horizontal" Grid.Column="0" VerticalAlignment="Center">
+                            <TextBlock Text="PRESETS" FontSize="10" FontWeight="Bold" Foreground="{StaticResource TextDim}" VerticalAlignment="Center" Margin="0,0,8,0" />
+                            <Button x:Name="BtnPresetZxg" Content="ZXG" Style="{StaticResource LogiChipStyle}" Padding="10,5" Click="Preset_Click" Tag="ZXG" />
+                            <Button x:Name="BtnPresetFlat" Content="Flat" Style="{StaticResource LogiChipStyle}" Padding="10,5" Click="Preset_Click" Tag="Flat" />
+                            <Button x:Name="BtnPresetBass" Content="Deep Bass" Style="{StaticResource LogiChipStyle}" Padding="10,5" Click="Preset_Click" Tag="Deep Bass" />
+                            <Button x:Name="BtnPresetEksa" Content="EKSA Standard" Style="{StaticResource LogiChipStyle}" Padding="10,5" Click="Preset_Click" Tag="EKSA Standard" />
+                            <Button x:Name="BtnPresetClassic" Content="Classic" Style="{StaticResource LogiChipStyle}" Padding="10,5" Click="Preset_Click" Tag="Classic" />
+                            <Button x:Name="BtnPresetPop" Content="Pop" Style="{StaticResource LogiChipStyle}" Padding="10,5" Click="Preset_Click" Tag="Pop" />
+                            <Button x:Name="BtnPresetJazz" Content="Jazz" Style="{StaticResource LogiChipStyle}" Padding="10,5" Click="Preset_Click" Tag="Jazz" />
+                            <Button x:Name="BtnPresetRock" Content="Pack&amp;Roll" Style="{StaticResource LogiChipStyle}" Padding="10,5" Click="Preset_Click" Tag="Pack&amp;Roll" />
+                        </StackPanel>
+
+                        <Button Grid.Column="1" Content="Reset (0 dB)" Style="{StaticResource LogiChipStyle}"
+                                Background="Transparent" Foreground="{StaticResource TextDim}" BorderBrush="{StaticResource CardBorder}" Click="BtnResetEq_Click" />
+                    </Grid>
+
+                    <!-- 10 Sliders -->
+                    <UniformGrid Grid.Row="1" Columns="10" Margin="0,2">
+                        <!-- Band 0: 31 Hz -->
+                        <Grid>
+                            <Grid.RowDefinitions>
+                                <RowDefinition Height="Auto" />
+                                <RowDefinition Height="*" />
+                            </Grid.RowDefinitions>
+                            <TextBlock x:Name="TxtGain0" Text="0 dB" FontSize="10" FontWeight="SemiBold" Foreground="{StaticResource TextMuted}" HorizontalAlignment="Center" Grid.Row="0" Margin="0,0,0,4" />
+                            <Slider x:Name="Slider0" Style="{StaticResource LogiEqSliderStyle}" Grid.Row="1" ValueChanged="Slider_ValueChanged" Tag="0" />
+                        </Grid>
+
+                        <!-- Band 1: 62 Hz -->
+                        <Grid>
+                            <Grid.RowDefinitions>
+                                <RowDefinition Height="Auto" />
+                                <RowDefinition Height="*" />
+                            </Grid.RowDefinitions>
+                            <TextBlock x:Name="TxtGain1" Text="0 dB" FontSize="10" FontWeight="SemiBold" Foreground="{StaticResource TextMuted}" HorizontalAlignment="Center" Grid.Row="0" Margin="0,0,0,4" />
+                            <Slider x:Name="Slider1" Style="{StaticResource LogiEqSliderStyle}" Grid.Row="1" ValueChanged="Slider_ValueChanged" Tag="1" />
+                        </Grid>
+
+                        <!-- Band 2: 125 Hz -->
+                        <Grid>
+                            <Grid.RowDefinitions>
+                                <RowDefinition Height="Auto" />
+                                <RowDefinition Height="*" />
+                            </Grid.RowDefinitions>
+                            <TextBlock x:Name="TxtGain2" Text="0 dB" FontSize="10" FontWeight="SemiBold" Foreground="{StaticResource TextMuted}" HorizontalAlignment="Center" Grid.Row="0" Margin="0,0,0,4" />
+                            <Slider x:Name="Slider2" Style="{StaticResource LogiEqSliderStyle}" Grid.Row="1" ValueChanged="Slider_ValueChanged" Tag="2" />
+                        </Grid>
+
+                        <!-- Band 3: 250 Hz -->
+                        <Grid>
+                            <Grid.RowDefinitions>
+                                <RowDefinition Height="Auto" />
+                                <RowDefinition Height="*" />
+                            </Grid.RowDefinitions>
+                            <TextBlock x:Name="TxtGain3" Text="0 dB" FontSize="10" FontWeight="SemiBold" Foreground="{StaticResource TextMuted}" HorizontalAlignment="Center" Grid.Row="0" Margin="0,0,0,4" />
+                            <Slider x:Name="Slider3" Style="{StaticResource LogiEqSliderStyle}" Grid.Row="1" ValueChanged="Slider_ValueChanged" Tag="3" />
+                        </Grid>
+
+                        <!-- Band 4: 500 Hz -->
+                        <Grid>
+                            <Grid.RowDefinitions>
+                                <RowDefinition Height="Auto" />
+                                <RowDefinition Height="*" />
+                            </Grid.RowDefinitions>
+                            <TextBlock x:Name="TxtGain4" Text="0 dB" FontSize="10" FontWeight="SemiBold" Foreground="{StaticResource TextMuted}" HorizontalAlignment="Center" Grid.Row="0" Margin="0,0,0,4" />
+                            <Slider x:Name="Slider4" Style="{StaticResource LogiEqSliderStyle}" Grid.Row="1" ValueChanged="Slider_ValueChanged" Tag="4" />
+                        </Grid>
+
+                        <!-- Band 5: 1 kHz -->
+                        <Grid>
+                            <Grid.RowDefinitions>
+                                <RowDefinition Height="Auto" />
+                                <RowDefinition Height="*" />
+                            </Grid.RowDefinitions>
+                            <TextBlock x:Name="TxtGain5" Text="0 dB" FontSize="10" FontWeight="SemiBold" Foreground="{StaticResource TextMuted}" HorizontalAlignment="Center" Grid.Row="0" Margin="0,0,0,4" />
+                            <Slider x:Name="Slider5" Style="{StaticResource LogiEqSliderStyle}" Grid.Row="1" ValueChanged="Slider_ValueChanged" Tag="5" />
+                        </Grid>
+
+                        <!-- Band 6: 2 kHz -->
+                        <Grid>
+                            <Grid.RowDefinitions>
+                                <RowDefinition Height="Auto" />
+                                <RowDefinition Height="*" />
+                            </Grid.RowDefinitions>
+                            <TextBlock x:Name="TxtGain6" Text="0 dB" FontSize="10" FontWeight="SemiBold" Foreground="{StaticResource TextMuted}" HorizontalAlignment="Center" Grid.Row="0" Margin="0,0,0,4" />
+                            <Slider x:Name="Slider6" Style="{StaticResource LogiEqSliderStyle}" Grid.Row="1" ValueChanged="Slider_ValueChanged" Tag="6" />
+                        </Grid>
+
+                        <!-- Band 7: 4 kHz -->
+                        <Grid>
+                            <Grid.RowDefinitions>
+                                <RowDefinition Height="Auto" />
+                                <RowDefinition Height="*" />
+                            </Grid.RowDefinitions>
+                            <TextBlock x:Name="TxtGain7" Text="0 dB" FontSize="10" FontWeight="SemiBold" Foreground="{StaticResource TextMuted}" HorizontalAlignment="Center" Grid.Row="0" Margin="0,0,0,4" />
+                            <Slider x:Name="Slider7" Style="{StaticResource LogiEqSliderStyle}" Grid.Row="1" ValueChanged="Slider_ValueChanged" Tag="7" />
+                        </Grid>
+
+                        <!-- Band 8: 8 kHz -->
+                        <Grid>
+                            <Grid.RowDefinitions>
+                                <RowDefinition Height="Auto" />
+                                <RowDefinition Height="*" />
+                            </Grid.RowDefinitions>
+                            <TextBlock x:Name="TxtGain8" Text="0 dB" FontSize="10" FontWeight="SemiBold" Foreground="{StaticResource TextMuted}" HorizontalAlignment="Center" Grid.Row="0" Margin="0,0,0,4" />
+                            <Slider x:Name="Slider8" Style="{StaticResource LogiEqSliderStyle}" Grid.Row="1" ValueChanged="Slider_ValueChanged" Tag="8" />
+                        </Grid>
+
+                        <!-- Band 9: 16 kHz -->
+                        <Grid>
+                            <Grid.RowDefinitions>
+                                <RowDefinition Height="Auto" />
+                                <RowDefinition Height="*" />
+                            </Grid.RowDefinitions>
+                            <TextBlock x:Name="TxtGain9" Text="0 dB" FontSize="10" FontWeight="SemiBold" Foreground="{StaticResource TextMuted}" HorizontalAlignment="Center" Grid.Row="0" Margin="0,0,0,4" />
+                            <Slider x:Name="Slider9" Style="{StaticResource LogiEqSliderStyle}" Grid.Row="1" ValueChanged="Slider_ValueChanged" Tag="9" />
+                        </Grid>
+                    </UniformGrid>
+
+                    <!-- Frequency Labels -->
+                    <UniformGrid Grid.Row="2" Columns="10" Margin="0,6,0,0">
+                        <TextBlock Text="31" FontSize="10" FontWeight="Bold" Foreground="{StaticResource TextDim}" HorizontalAlignment="Center" />
+                        <TextBlock Text="62" FontSize="10" FontWeight="Bold" Foreground="{StaticResource TextDim}" HorizontalAlignment="Center" />
+                        <TextBlock Text="125" FontSize="10" FontWeight="Bold" Foreground="{StaticResource TextDim}" HorizontalAlignment="Center" />
+                        <TextBlock Text="250" FontSize="10" FontWeight="Bold" Foreground="{StaticResource TextDim}" HorizontalAlignment="Center" />
+                        <TextBlock Text="500" FontSize="10" FontWeight="Bold" Foreground="{StaticResource TextDim}" HorizontalAlignment="Center" />
+                        <TextBlock Text="1k" FontSize="10" FontWeight="Bold" Foreground="{StaticResource TextDim}" HorizontalAlignment="Center" />
+                        <TextBlock Text="2k" FontSize="10" FontWeight="Bold" Foreground="{StaticResource TextDim}" HorizontalAlignment="Center" />
+                        <TextBlock Text="4k" FontSize="10" FontWeight="Bold" Foreground="{StaticResource TextDim}" HorizontalAlignment="Center" />
+                        <TextBlock Text="8k" FontSize="10" FontWeight="Bold" Foreground="{StaticResource TextDim}" HorizontalAlignment="Center" />
+                        <TextBlock Text="16k" FontSize="10" FontWeight="Bold" Foreground="{StaticResource TextDim}" HorizontalAlignment="Center" />
+                    </UniformGrid>
+                </Grid>
+            </Border>
+
+            <!-- Refined Footer -->
+            <Grid Grid.Row="3" Background="{StaticResource HeaderBg}">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="*" />
+                    <ColumnDefinition Width="Auto" />
+                </Grid.ColumnDefinitions>
+
+                <StackPanel Orientation="Horizontal" Grid.Column="0" VerticalAlignment="Center" Margin="16,0,0,0">
+                    <CheckBox x:Name="ChkAutoStart" Style="{StaticResource LogiCheckBox}" Content="Run on Windows startup" Margin="0,0,16,0" Checked="ChkAutoStart_Changed" Unchecked="ChkAutoStart_Changed" />
+                    <CheckBox x:Name="ChkStartMinimized" Style="{StaticResource LogiCheckBox}" Content="Start minimized in tray" Margin="0,0,16,0" Checked="ChkStartMinimized_Changed" Unchecked="ChkStartMinimized_Changed" />
+                </StackPanel>
+
+                <StackPanel Orientation="Horizontal" Grid.Column="1" VerticalAlignment="Center" Margin="0,0,16,0">
+                    <Button Content="Hide to Tray" Style="{StaticResource LogiChipStyle}" Background="#1C2331" Foreground="{StaticResource AccentCyan}" BorderBrush="{StaticResource AccentCyan}" Click="BtnClose_Click" />
+                </StackPanel>
+            </Grid>
+        </Grid>
+    </Border>
+</Window>

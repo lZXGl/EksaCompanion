@@ -1,0 +1,11 @@
+# Build output and intermediate artifacts
+bin/
+obj/
+
+# Logs, debug symbols, and local IDE state
+*.log
+*.pdb
+*.user
+*.suo
+.vs/
+

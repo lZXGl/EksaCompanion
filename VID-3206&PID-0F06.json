@@ -1,0 +1,196 @@
+{
+    "defaultMode": [
+        {
+            "algorithm": "Surround",
+            "customizeType": 0,
+            "name": "Deep Bass",
+            "parameter": [
+                5,
+                4,
+                3,
+                3,
+                1,
+                -1,
+                -1,
+                -1,
+                -1,
+                -1
+            ],
+            "type": 0,
+            "uuid": "{556a128b-dcc2-4150-b83d-046d34fd64af}"
+        },
+        {
+            "algorithm": "Surround",
+            "customizeType": 0,
+            "name": "EKSA Standard",
+            "parameter": [
+                -3,
+                -3,
+                -3,
+                -3,
+                -2,
+                0,
+                0,
+                0,
+                0,
+                0
+            ],
+            "type": 0,
+            "uuid": "{fdd6c0b9-295c-4e02-ae2f-4600a46ffa29}"
+        },
+        {
+            "algorithm": "Surround",
+            "customizeType": 0,
+            "name": "FPS",
+            "parameter": [
+                0,
+                0,
+                1,
+                2,
+                3,
+                4,
+                6,
+                7,
+                7,
+                8
+            ],
+            "type": 0,
+            "uuid": "{81d63032-da68-45e4-9f96-dcb5ef6195be}"
+        },
+        {
+            "algorithm": "Surround",
+            "customizeType": 0,
+            "name": "MOBA",
+            "parameter": [
+                0,
+                -2,
+                -2,
+                0,
+                4,
+                2,
+                5,
+                5,
+                5,
+                0
+            ],
+            "type": 0,
+            "uuid": "{38c4cbc6-fc79-46be-b58e-269b998f98dc}"
+        },
+        {
+            "algorithm": "Stereo",
+            "customizeType": 0,
+            "name": "Classic",
+            "parameter": [
+                0,
+                0,
+                0,
+                0,
+                0,
+                -2,
+                -2,
+                -2,
+                -5,
+                -8
+            ],
+            "type": 1,
+            "uuid": "{2457f705-007f-4501-a7b1-a100ac90e625}"
+        },
+        {
+            "algorithm": "Stereo",
+            "customizeType": 0,
+            "name": "Deep Bass",
+            "parameter": [
+                2,
+                5,
+                4,
+                1,
+                -2,
+                0,
+                0,
+                0,
+                -1,
+                -1
+            ],
+            "type": 1,
+            "uuid": "{a81696a8-c5fe-4216-a036-0f19e2909b82}"
+        },
+        {
+            "algorithm": "Stereo",
+            "customizeType": 0,
+            "name": "EKSA Standard",
+            "parameter": [
+                -3,
+                -3,
+                -3,
+                -3,
+                -2,
+                0,
+                0,
+                0,
+                0,
+                10
+            ],
+            "type": 1,
+            "uuid": "{f3c4d7c0-9976-454b-9bc9-dc8f86e467b4}"
+        },
+        {
+            "algorithm": "Stereo",
+            "customizeType": 0,
+            "name": "Jazz",
+            "parameter": [
+                -1,
+                -1,
+                2,
+                4,
+                4,
+                4,
+                4,
+                4,
+                2,
+                2
+            ],
+            "type": 1,
+            "uuid": "{20f49332-0782-4e1c-8a72-6a20f3a3e3db}"
+        },
+        {
+            "algorithm": "Stereo",
+            "customizeType": 0,
+            "name": "Pack&Roll",
+            "parameter": [
+                9,
+                9,
+                -3,
+                4,
+                -2,
+                1,
+                5,
+                5,
+                9,
+                9
+            ],
+            "type": 1,
+            "uuid": "{38da2a25-96ec-42e8-a819-1133f33d9760}"
+        },
+        {
+            "algorithm": "Stereo",
+            "customizeType": 0,
+            "name": "Pop",
+            "parameter": [
+                9,
+                6,
+                5,
+                2,
+                -6,
+                -6,
+                -3,
+                -3,
+                1,
+                2
+            ],
+            "type": 1,
+            "uuid": "{f26c3684-bbaa-41ee-8efe-c10923e4be4e}"
+        }
+    ],
+    "pid": "0x0F06",
+    "vid": "0x3206"
+}
