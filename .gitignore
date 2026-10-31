@@ -1,6 +1,7 @@
 # Build output and intermediate artifacts
 bin/
 obj/
+brag-output/
 
 # Logs, debug symbols, and local IDE state
 *.log
