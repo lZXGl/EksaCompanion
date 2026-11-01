@@ -154,20 +154,37 @@ namespace EksaCompanion
             int h = sz.Height > 0 ? sz.Height : 16;
 
             using (Bitmap bmp = new Bitmap(w, h, System.Drawing.Imaging.PixelFormat.Format32bppArgb))
-            using (Graphics g = Graphics.FromImage(bmp))
             {
-                g.Clear(System.Drawing.Color.Transparent);
-                g.SmoothingMode = System.Drawing.Drawing2D.SmoothingMode.HighQuality;
-                g.TextRenderingHint = System.Drawing.Text.TextRenderingHint.AntiAliasGridFit;
-
-                float fontSize = w * 0.96f;
-                using (Font font = new Font("Segoe Fluent Icons", fontSize, System.Drawing.FontStyle.Regular, GraphicsUnit.Pixel))
-                using (StringFormat sf = (StringFormat)StringFormat.GenericTypographic.Clone())
+                using (Graphics g = Graphics.FromImage(bmp))
                 {
-                    sf.Alignment = StringAlignment.Center;
-                    sf.LineAlignment = StringAlignment.Center;
-                    // \uE95B = Windows 11 Native Headset Glyph
-                    g.DrawString("\uE95B", font, System.Drawing.Brushes.White, new RectangleF(w * 0.53f, h * 0.53f, 0f, 0f), sf);
+                    g.Clear(System.Drawing.Color.Transparent);
+                    g.SmoothingMode = System.Drawing.Drawing2D.SmoothingMode.HighQuality;
+                    g.TextRenderingHint = System.Drawing.Text.TextRenderingHint.AntiAliasGridFit;
+
+                    float fontSize = w * 0.96875f;
+                    using (Font font = new Font("Segoe Fluent Icons", fontSize, System.Drawing.FontStyle.Regular, GraphicsUnit.Pixel))
+                    using (StringFormat sf = (StringFormat)StringFormat.GenericTypographic.Clone())
+                    {
+                        sf.Alignment = StringAlignment.Center;
+                        sf.LineAlignment = StringAlignment.Center;
+                        // \uE95B = Windows 11 Native Headset Glyph (dual subpixel pass for native bold stroke)
+                        g.DrawString("\uE95B", font, System.Drawing.Brushes.White, new RectangleF(w * 0.531f, h * 0.531f, 0f, 0f), sf);
+                        g.DrawString("\uE95B", font, System.Drawing.Brushes.White, new RectangleF(w * 0.547f, h * 0.531f, 0f, 0f), sf);
+                    }
+                }
+
+                // Boost alpha channel to match native Windows 11 taskbar stroke brightness
+                for (int y = 0; y < h; y++)
+                {
+                    for (int x = 0; x < w; x++)
+                    {
+                        System.Drawing.Color c = bmp.GetPixel(x, y);
+                        if (c.A > 0)
+                        {
+                            int na = (int)Math.Min(255, Math.Round(c.A * 1.35));
+                            bmp.SetPixel(x, y, System.Drawing.Color.FromArgb(na, 255, 255, 255));
+                        }
+                    }
                 }
 
                 IntPtr hIcon = bmp.GetHicon();
