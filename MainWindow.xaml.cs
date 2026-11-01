@@ -144,20 +144,65 @@ namespace EksaCompanion
             };
         }
 
+        [DllImport("user32.dll", SetLastError = true)]
+        private static extern bool DestroyIcon(IntPtr hIcon);
+
+        private System.Drawing.Icon CreateNativeTrayIcon()
+        {
+            System.Drawing.Size sz = SystemInformation.SmallIconSize;
+            int w = sz.Width > 0 ? sz.Width : 16;
+            int h = sz.Height > 0 ? sz.Height : 16;
+
+            using (Bitmap bmp = new Bitmap(w, h, System.Drawing.Imaging.PixelFormat.Format32bppArgb))
+            using (Graphics g = Graphics.FromImage(bmp))
+            {
+                g.Clear(System.Drawing.Color.Transparent);
+                g.SmoothingMode = System.Drawing.Drawing2D.SmoothingMode.HighQuality;
+                g.TextRenderingHint = System.Drawing.Text.TextRenderingHint.AntiAliasGridFit;
+
+                float fontSize = w * 0.96f;
+                using (Font font = new Font("Segoe Fluent Icons", fontSize, System.Drawing.FontStyle.Regular, GraphicsUnit.Pixel))
+                using (StringFormat sf = (StringFormat)StringFormat.GenericTypographic.Clone())
+                {
+                    sf.Alignment = StringAlignment.Center;
+                    sf.LineAlignment = StringAlignment.Center;
+                    // \uE95B = Windows 11 Native Headset Glyph
+                    g.DrawString("\uE95B", font, System.Drawing.Brushes.White, new RectangleF(w * 0.53f, h * 0.53f, 0f, 0f), sf);
+                }
+
+                IntPtr hIcon = bmp.GetHicon();
+                try
+                {
+                    return (System.Drawing.Icon)System.Drawing.Icon.FromHandle(hIcon).Clone();
+                }
+                finally
+                {
+                    DestroyIcon(hIcon);
+                }
+            }
+        }
+
         private void InitNotifyIcon()
         {
             _notifyIcon = new NotifyIcon();
             try
             {
-                string iconPath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "app.ico");
-                if (File.Exists(iconPath))
-                    _notifyIcon.Icon = new Icon(iconPath);
-                else
-                    _notifyIcon.Icon = SystemIcons.Application;
+                _notifyIcon.Icon = CreateNativeTrayIcon();
             }
             catch
             {
-                _notifyIcon.Icon = SystemIcons.Application;
+                try
+                {
+                    string iconPath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "app.ico");
+                    if (File.Exists(iconPath))
+                        _notifyIcon.Icon = new Icon(iconPath);
+                    else
+                        _notifyIcon.Icon = SystemIcons.Application;
+                }
+                catch
+                {
+                    _notifyIcon.Icon = SystemIcons.Application;
+                }
             }
 
             _notifyIcon.Visible = true;
